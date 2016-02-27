@@ -16,6 +16,7 @@ namespace DoddleReport
 
             FontSize = configElement.FontSize;
             TextRotation = configElement.TextRotation;
+            WrapText = configElement.WrapText;
         }
 
         public static ReportStyle Default = new ReportStyle();
@@ -31,7 +32,9 @@ namespace DoddleReport
             TextRotation = 0;
             HorizontalAlignment = HorizontalAlignment.Left;
             VerticalAlignment = VerticalAlignment.Middle;
+            WrapText = false;
         }
+
 
         public ReportStyle(string styleName)
         {
@@ -84,6 +87,7 @@ namespace DoddleReport
         public int FontSize { get; set; }
         public int TextRotation { get; set; }
         public int Width { get; set; }
+        public bool WrapText { get; set; }
 
         public HorizontalAlignment HorizontalAlignment { get; set; }
         public VerticalAlignment VerticalAlignment { get; set; }
@@ -103,8 +107,8 @@ namespace DoddleReport
                 TextRotation = TextRotation,
 
                 HorizontalAlignment = HorizontalAlignment,
-                VerticalAlignment = VerticalAlignment
-
+                VerticalAlignment = VerticalAlignment,
+                WrapText = WrapText
             };
 
             return style;

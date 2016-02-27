@@ -33,6 +33,13 @@ namespace DoddleReport.Configuration
             set { this["italic"] = value; }
         }
 
+        [ConfigurationProperty("wraptext", DefaultValue = false)]
+        public bool WrapText
+        {
+            get { return (bool)this["wraptext"]; }
+            set { this["wraptext"] = value; }
+        }
+
         [IntegerValidator(MinValue=6, MaxValue=72)]
         [ConfigurationProperty("fontSize", DefaultValue = 9)]
         public int FontSize
@@ -96,6 +103,7 @@ namespace DoddleReport.Configuration
 
             reportStyle.FontSize = FontSize;
             reportStyle.TextRotation = TextRotation;
+            reportStyle.WrapText = WrapText;
         }
     }
 }

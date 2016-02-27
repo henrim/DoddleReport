@@ -139,7 +139,7 @@ namespace DoddleReport.OpenXml
         /// <returns>The row it last wrote on.</returns>
         private static int RenderTextItem(IXLWorksheet worksheet, int fieldsCount, string itemText, int currentRow, ReportStyle reportStyle)
         {
-            foreach (var s in itemText.Split(new[] { "\r\n"}, StringSplitOptions.None))
+            foreach (var s in itemText.Split(new[] { "\r\n" }, StringSplitOptions.None))
             {
                 currentRow++;
                 var row = worksheet.Row(currentRow);
@@ -203,11 +203,11 @@ namespace DoddleReport.OpenXml
                         cell.Value = reportRow.GetFormattedValue(field);
                     }
 
-					var url = reportRow.GetUrlString(field);
-					if (url != null)
-					{
-						cell.Hyperlink = new XLHyperlink(url);
-					}
+                    var url = reportRow.GetUrlString(field);
+                    if (url != null)
+                    {
+                        cell.Hyperlink = new XLHyperlink(url);
+                    }
                 }
                 else if (reportRow.RowType == ReportRowType.FooterRow)
                 {
@@ -347,6 +347,7 @@ namespace DoddleReport.OpenXml
 
 
             // TODO: AdjustToContents renders horribly when deployed to an Azure Website, need to determine why
+            worksheet.Columns().AdjustToContents();
 
             // Adjust the width of all the columns
             for (int i = 0; i < fieldsCount; i++)
@@ -354,26 +355,29 @@ namespace DoddleReport.OpenXml
                 var reportField = report.DataFields.Where(f => !f.Hidden).Skip(i).Take(1).Single();
                 var width = new int[] { reportField.DataStyle.Width, reportField.FooterStyle.Width, reportField.HeaderStyle.Width }.Max();
                 var adjustToContents = report.RenderHints[AdjustColumnWidthToContents] as bool? ?? true;
-
+                var wraptext = reportField.HeaderStyle.WrapText || reportField.DataStyle.WrapText ||reportField.FooterStyle.WrapText;
                 if (adjustToContents || width > 0)
                 {
                     var column = worksheet.Column(i + 1);
-                    if (adjustToContents && width > 0)
+                    if (wraptext && width > 0)
                     {
-                        column.AdjustToContents(width.PixelsToUnits(column.Style.Font), double.MaxValue);
+                        var colwidth = width.PixelsToUnits(column.Style.Font);
+                        column.AdjustToContents(width.PixelsToUnits(column.Style.Font), colwidth);
                     }
-                    else if (adjustToContents)
-                    {
-                        column.AdjustToContents(1, 50, 5.0, 100.0);
-                    }
-                    else
+                    else if (width > 0)
+                    
                     {
                         column.Width = width.PixelsToUnits(column.Style.Font);
                     }
+                    else
+                    {
+                        column.AdjustToContents(1, 50, 5.0, 100.0);
+                    }
+
                 }
             }
 
-            worksheet.Columns().AdjustToContents();
+
 
             // Check if the current writer needs to append another report to the report we just generated
             if (ReportsToAppend.ContainsKey(report))
